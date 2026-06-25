@@ -12,9 +12,16 @@ func main() {
 	}
 
 	r := gin.Default()
-	
 
-	database.InitDB()
+	db, err := database.InitDB()
+	if err != nil {
+		panic(err)
+	}
+
+	if err := database.AutoMigrate(db); err != nil {
+		panic(err)
+	}
+
 	r.GET("/health",func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status" : "ok",
