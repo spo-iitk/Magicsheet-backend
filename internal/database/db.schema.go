@@ -9,11 +9,14 @@ import (
 //custom types declared here
 type UserRole string
 
+
 const (
-	RoleOPC  UserRole = "opc"
-	RoleAPC  UserRole = "apc"
-	RoleCoCo UserRole = "coco"
+	RoleOpc UserRole = "opc"
+	RoleApc UserRole = "apc"
+	RoleCoco UserRole = "coco"
 )
+
+
 
 type StudentStatus string
 
@@ -21,7 +24,6 @@ const (
 	StudentAvailable        StudentStatus = "available"
 	StudentInInterview      StudentStatus = "in_interview"
 	StudentWaitingNextRound StudentStatus = "waiting_for_next_round"
-	StudentCompleted        StudentStatus = "completed"
 	StudentFrozen           StudentStatus = "frozen"
 )
 
@@ -69,10 +71,8 @@ type User struct {
 	Name     string   `gorm:"type:varchar(150);not null"                                     json:"name"`
 	Email    string   `gorm:"type:varchar(255);uniqueIndex:idx_user_email;not null"          json:"email"`
 	Role     UserRole `gorm:"type:varchar(20);not null;index:idx_user_role"                  json:"role"`
-	Phone    string   `gorm:"type:varchar(20)"                                               json:"phone"`
 	IsActive bool     `gorm:"default:true;not null"                                          json:"is_active"`
 
-	// Reverse relations
 	Assignments []CoordinatorAssignment `gorm:"foreignKey:UserID" json:"assignments,omitempty"`
 }
 
@@ -233,3 +233,4 @@ func AutoMigrate(db *gorm.DB) error {
 		&SyncLog{},
 	)
 }
+
