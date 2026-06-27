@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/spo-iitk/Magicsheet-backend/internal/auth"
 	"github.com/spo-iitk/Magicsheet-backend/internal/database"
 )
 
@@ -11,7 +12,12 @@ func main() {
 		godotenv.Load(".env") // fallback if run from project root
 	}
 
+	//creating the defualt gin router read from here 
 	r := gin.Default()
+	api := r.Group("/api")
+
+	auth.RegisterRoutes(api)
+
 
 	db, err := database.InitDB()
 	if err != nil {
