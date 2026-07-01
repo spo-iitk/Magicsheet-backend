@@ -34,8 +34,12 @@ func (s *Service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 		return nil, ErrInvalidCredentials
 	}
 
-	
+	token, err := GenerateAccessToken(user)
+
+	if err != nil {
+		return nil, err
+	}
 	return &LoginResponse{
-		AccessToken: "temp - token",
+		AccessToken: token,
 	}, nil 
 }
