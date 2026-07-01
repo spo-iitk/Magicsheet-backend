@@ -18,27 +18,6 @@ backend/
 │   │   ├── routes.go
 │   │   └── dto.go
 │   │
-│   ├── users/
-│   │   ├── handler.go
-│   │   ├── service.go
-│   │   ├── repository.go
-│   │   ├── model.go
-│   │   ├── routes.go
-│   │   └── dto.go
-│   │
-│   ├── projects/
-│   │   ├── handler.go
-│   │   ├── service.go
-│   │   ├── repository.go
-│   │   ├── model.go
-│   │   ├── routes.go
-│   │   └── dto.go
-│   │
-│   ├── applications/
-│   ├── professors/
-│   ├── mentors/
-│   ├── admin/
-│   │
 │   ├── database/
 │   ├── config/
 │   ├── utils/
