@@ -38,6 +38,5 @@ func (r *Repository) GetUserByID(ctx context.Context, id uint) (*database.User, 
 	if err != nil {
 		return nil, err
 	}
-
 	return &user, nil 
 }
