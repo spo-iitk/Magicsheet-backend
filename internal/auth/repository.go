@@ -8,17 +8,17 @@ import (
 )
 
 type Repository struct {
-	db *gorm.DB	
+	db *gorm.DB
 }
 
-func NewRepository(db *gorm.DB) *Repository{
+func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{
-		db : db,
+		db: db,
 	}
 }
 
-func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*database.User, error){
-	
+func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*database.User, error) {
+
 	var user database.User
 	err := r.db.WithContext(ctx).Where("email = ?", email).First(&user).Error
 
@@ -29,8 +29,7 @@ func (r *Repository) GetUserByEmail(ctx context.Context, email string) (*databas
 	return &user, nil
 }
 
-
-func (r *Repository) GetUserByID(ctx context.Context, id uint) (*database.User, error){
+func (r *Repository) GetUserByID(ctx context.Context, id uint) (*database.User, error) {
 	var user database.User
 
 	err := r.db.WithContext(ctx).Where("ID = ?", id).First(&user).Error
@@ -38,5 +37,9 @@ func (r *Repository) GetUserByID(ctx context.Context, id uint) (*database.User, 
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil 
+	return &user, nil
+}
+
+func (r *Repository) CreateUser(ctx context.Context, user *database.User) error {
+	return r.db.WithContext(ctx).Create(user).Error
 }
