@@ -10,28 +10,38 @@ import (
 )
 
 func AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context){
+	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
-		
-		if authHeader == "" {
+		tokenString := ""
+
+		if authHeader != "" {
+			tokenString = strings.TrimPrefix(authHeader, "Bearer ")
+		}
+
+		if tokenString == "" {
+			cookieToken, err := c.Cookie("access_token")
+			if err == nil {
+				tokenString = cookieToken
+			}
+		}
+
+		if tokenString == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
-				"error" : "missing authorization header",
+				"error": "missing authorization header",
 			})
 			c.Abort()
 			return
 		}
 
-		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error){
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, jwt.ErrTokenSignatureInvalid
 			}
-			
+
 			return []byte(os.Getenv("JWT_SECRET")), nil
 		})
-		
+
 		if err != nil || !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "invalid token",
@@ -40,8 +50,17 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		claims := token.Claims.(jwt.MapClaims)
-		
-		userId := uint(claims["sub"].(float64))
+
+		sub, ok := claims["sub"].(float64)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "invalid token claims",
+			})
+			c.Abort()
+			return
+		}
+
+		userId := uint(sub)
 
 		c.Set("userID", userId)
 		c.Set("role", claims["role"])

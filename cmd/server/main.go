@@ -11,7 +11,7 @@ import (
 
 func main() {
 	if err := godotenv.Load("../../.env"); err != nil {
-		godotenv.Load(".env") 
+		godotenv.Load(".env")
 	}
 
 	//creating router
@@ -21,33 +21,28 @@ func main() {
 	r.Use(cors.New(middleware.CORS()))
 	api := r.Group("/api")
 
-	
 	//db init
-	db, err := database.InitDB()	
+	db, err := database.InitDB()
 	if err != nil {
 		panic(err)
 	}
-	
+
 	//depedency injection
 	repo := auth.NewRepository(db)
 	service := auth.NewService(repo)
 	handler := auth.NewHandler(service)
 	auth.RegisterRoutes(api, handler)
-	
 
 	//migration
 	if err := database.AutoMigrate(db); err != nil {
 		panic(err)
 	}
 
-	r.GET("/health",func(c *gin.Context) {
+	r.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"status" : "ok",
+			"status": "ok",
 		})
 	})
-	
+
 	r.Run(":8080")
 }
-
-
-

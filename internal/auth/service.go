@@ -17,7 +17,7 @@ func NewService(repo *Repository) *Service{
 }
 
 func (s *Service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, error){
-	
+
 	user, err := s.repo.GetUserByEmail(ctx, req.Email)
 
 	if err != nil {
@@ -39,17 +39,18 @@ func (s *Service) Login(ctx context.Context, req LoginRequest) (*LoginResponse, 
 	if err != nil {
 		return nil, err
 	}
-  
+
 	return &LoginResponse{
 		AccessToken: token,
-	}, nil 
+		Role:        string(user.Role),
+	}, nil
 }
 
 func (s *Service) Me(ctx context.Context, userID uint) (*MeResponse, error){
 	user, err := s.repo.GetUserByID(ctx, userID)
 
 	if err != nil {
-		return nil, err 
+		return nil, err
 	}
 
 	return &MeResponse{
@@ -57,5 +58,5 @@ func (s *Service) Me(ctx context.Context, userID uint) (*MeResponse, error){
 		Name: user.Name,
 		Email: user.Email,
 		Role: string(user.Role),
-	}, nil 
+	}, nil
 }
