@@ -44,6 +44,14 @@ func (r *RASRepository) GetProformas(ctx context.Context, rcID uint) ([]RASProfo
 	return proforma, nil
 }
 
-func (r *RASRepository) GetStudents(ctx context.Context) {
-	// uses r.studentDB
+func (r *RASRepository) GetStudents(ctx context.Context) ([]RASStudent, error) {
+	var students []RASStudent
+
+	err := r.studentDB.WithContext(ctx).Find(&students).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return students, nil
 }

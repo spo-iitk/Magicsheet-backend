@@ -53,6 +53,19 @@ func (s *Service) SyncProformas(ctx context.Context) error {
 
 func (s *Service) SyncStudents(ctx context.Context) error {
 
+	students, err := s.rasRepo.GetStudents(ctx)
+
+	if err != nil {
+		return nil
+	}
+
+	for _, rasStudent := range students {
+		pibsStudent := mapStudent(rasStudent)
+
+		if err := s.repo.UpsertStudent(ctx, &pibsStudent); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -80,5 +93,22 @@ func mapProforma(p RASProforma) database.Proforma {
 		ProformaType:      "",
 		IsInterviewActive: false,
 		LastSyncedAt:      time.Now(),
+	}
+}
+
+func mapStudent(s RASStudent) database.Student {
+
+	program, department := getProgramDepartment(s.ProgramDepartmentID)
+	return database.Student{
+		ID:            s.ID,
+		RollNumber:    s.RollNumber,
+		Name:          s.Name,
+		Department:    department,
+		Program:       program,
+		Email:         s.Email,
+		Phone:         s.Phone,
+		CurrentStatus: database.StudentAvailable,
+		IsFrozen:      false,
+		LastSyncedAt:  time.Now(),
 	}
 }

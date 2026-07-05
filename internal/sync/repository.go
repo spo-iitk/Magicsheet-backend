@@ -50,3 +50,19 @@ func (r *Repository) UpsertProforma(ctx context.Context, p *database.Proforma) e
 
 	return r.db.WithContext(ctx).Model(&existing).Updates(p).Error
 }
+
+func (r *Repository) UpsertStudent(ctx context.Context, student *database.Student) error {
+	var existing database.Student
+
+	err := r.db.WithContext(ctx).First(&existing, student.ID).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return r.db.WithContext(ctx).Create(student).Error
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return r.db.WithContext(ctx).Model(&existing).Updates(student).Error
+}

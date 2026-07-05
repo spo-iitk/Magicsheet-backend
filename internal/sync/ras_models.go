@@ -25,6 +25,19 @@ type RASProforma struct {
 	Profile string `gorm:"column:profile"`
 }
 
+type RASStudent struct {
+	ID                  uint   `gorm:"column:id"`
+	RollNumber          string `gorm:"column:roll_no"`
+	Name                string `gorm:"column:name"`
+	Email               string `gorm:"column:iitk_email"`
+	Phone               string `gorm:"column:phone"`
+	ProgramDepartmentID uint   `gorm:"column:program_department_id"`
+}
+
+func (RASStudent) TableName() string {
+	return "students"
+}
+
 func (RASRecruitmentCycle) TableName() string {
 	return "recruitment_cycles"
 }
