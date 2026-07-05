@@ -166,6 +166,7 @@ CREATE TABLE interview_sessions (
     created_at timestamptz,
     updated_at timestamptz,
     proforma_candidate_id bigint NOT NULL,
+    proforma_id bigint NOT NULL,
     round_id bigint NOT NULL,
     conducted_by_id bigint NOT NULL,
     in_time timestamptz,
@@ -177,6 +178,11 @@ CREATE TABLE interview_sessions (
         FOREIGN KEY (proforma_candidate_id) 
         REFERENCES proforma_candidates (id) 
         ON DELETE RESTRICT,
+
+    CONSTRAINT fk_proformas_interview_sessions 
+        FOREIGN KEY (proforma_id) 
+        REFERENCES proformas (id) 
+        ON DELETE CASCADE,
         
     CONSTRAINT fk_interview_rounds_interview_sessions 
         FOREIGN KEY (round_id) 
@@ -191,6 +197,7 @@ CREATE TABLE interview_sessions (
 
 CREATE UNIQUE INDEX idx_session_candidate_round ON interview_sessions (proforma_candidate_id, round_id);
 CREATE INDEX idx_session_candidate ON interview_sessions (proforma_candidate_id);
+CREATE UNIQUE INDEX idx_candidate_proforma_student ON interview_sessions (proforma_id);
 CREATE INDEX idx_session_round ON interview_sessions (round_id);
 CREATE INDEX idx_session_conductor ON interview_sessions (conducted_by_id);
 CREATE INDEX idx_session_intime ON interview_sessions (in_time);

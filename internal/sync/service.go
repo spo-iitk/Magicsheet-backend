@@ -1,6 +1,8 @@
 package sync
 
-import "github.com/gin-gonic/gin"
+import (
+	"context"
+)
 
 type Service struct {
 	repo    *Repository
@@ -14,10 +16,10 @@ func NewService(repo *Repository, rasRepo *RASRepository) *Service {
 	}
 }
 
-func (s *Service) SyncProformas(c *gin.Context) error {
+func (s *Service) SyncProformas(ctx context.Context) error {
 	return nil
 }
 
-func (s *Service) SyncStudents(c *gin.Context) error {
+func (s *Service) SyncStudents(c context.Context) error {
 	return nil
 }

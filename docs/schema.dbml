@@ -138,6 +138,7 @@ Table interview_sessions {
   created_at timestamptz
   updated_at timestamptz
   proforma_candidate_id bigint [not null]
+  proforma_id bigint [not null]
   round_id bigint [not null]
   conducted_by_id bigint [not null]
   in_time timestamptz
@@ -148,6 +149,7 @@ Table interview_sessions {
   Indexes {
     (proforma_candidate_id, round_id) [unique, name: 'idx_session_candidate_round']
     proforma_candidate_id [name: 'idx_session_candidate']
+    proforma_id [unique, name: 'idx_candidate_proforma_student']
     round_id [name: 'idx_session_round']
     conducted_by_id [name: 'idx_session_conductor']
     in_time [name: 'idx_session_intime']
@@ -180,6 +182,7 @@ Ref: proforma_candidates.student_id > students.id [delete: restrict]
 Ref: proforma_candidates.added_by_id > users.id [delete: set null]
 Ref: interview_rounds.proforma_id > proformas.id [delete: cascade]
 Ref: interview_sessions.proforma_candidate_id > proforma_candidates.id [delete: restrict]
+Ref: interview_sessions.proforma_id > proformas.id [delete: cascade]
 Ref: interview_sessions.round_id > interview_rounds.id [delete: restrict]
 Ref: interview_sessions.conducted_by_id > users.id [delete: restrict]
 Ref: coordinator_assignments.proforma_id > proformas.id [delete: cascade]
