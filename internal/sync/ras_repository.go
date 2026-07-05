@@ -3,28 +3,39 @@ package sync
 import (
 	"context"
 
-	"github.com/spo-iitk/Magicsheet-backend/internal/database"
 	"gorm.io/gorm"
 )
 
 type RASRepository struct {
-	db *gorm.DB
+	rcDB          *gorm.DB
+	applicationDB *gorm.DB
+	studentDB     *gorm.DB
 }
 
-func NewRASrepository(db *gorm.DB) *RASRepository {
+func NewRASrepository(rcDB *gorm.DB, applicationDB *gorm.DB, studentDB *gorm.DB) *RASRepository {
 	return &RASRepository{
-		db: db,
+		rcDB:          rcDB,
+		applicationDB: applicationDB,
+		studentDB:     studentDB,
 	}
 }
 
-func (r *RASRepository) GetActiveRecuritmentCycle(ctx context.Context) (*database.RecruitmentCycle, error) {
-	var rc database.RecruitmentCycle
+func (r *RASRepository) GetActiveRecruitmentCycles(ctx context.Context) ([]RASRecruitmentCycle, error) {
+	var rcs []RASRecruitmentCycle
 
-	err := r.db.WithContext(ctx).Where("is_active = ?", true).First(&rc).Error
+	err := r.rcDB.WithContext(ctx).Where("is_active = ?", true).Find(&rcs).Error
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &rc, nil
+	return rcs, nil
+}
+
+func (r *RASRepository) GetProformas(ctx context.Context, rcID uint) {
+	// uses r.applicationDB
+}
+
+func (r *RASRepository) GetStudents(ctx context.Context) {
+	// uses r.studentDB
 }

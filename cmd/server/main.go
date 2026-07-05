@@ -28,7 +28,16 @@ func main() {
 		panic(err)
 	}
 
-	rasDB, err := database.InitRASDB()
+	rasRCDB, err := database.InitRASRCDB()
+	if err != nil {
+		panic(err)
+	}
+
+	rasApplicationDB, err := database.InitRASApplicationDB()
+	if err != nil {
+		panic(err)
+	}
+	rasStudentDB, err := database.InitRASStudentDB()
 	if err != nil {
 		panic(err)
 	}
@@ -42,7 +51,7 @@ func main() {
 
 	//sync module
 	syncRepo := sync.NewRepository(pibsDB)
-	rasRepo := sync.NewRASrepository(rasDB)
+	rasRepo := sync.NewRASrepository(rasRCDB, rasApplicationDB, rasStudentDB)
 	syncService := sync.NewService(syncRepo, rasRepo)
 	syncHandler := sync.NewHandler(syncService)
 	sync.RegisterRoutes(api, syncHandler)

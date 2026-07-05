@@ -28,13 +28,13 @@ func InitPIBSDB() (*gorm.DB, error) {
 	return db, nil
 }
 
-func InitRASDB() (*gorm.DB, error) {
+func InitRASDB(dbName string) (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai",
 		os.Getenv("RAS_POSTGRES_HOST"),
 		os.Getenv("RAS_POSTGRES_USER"),
 		os.Getenv("RAS_POSTGRES_PASSWORD"),
-		os.Getenv("RAS_POSTGRES_DB"),
+		dbName,
 		os.Getenv("RAS_POSTGRES_PORT"),
 	)
 
@@ -44,8 +44,19 @@ func InitRASDB() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	fmt.Println("!!--------Connnected to Ras database--------!!")
+	fmt.Printf("\n!!--------Connnected to Ras %s--------!!\n", dbName)
 
 	return db, nil
 
+}
+
+func InitRASRCDB() (*gorm.DB, error) {
+	return InitRASDB("rc")
+}
+
+func InitRASApplicationDB() (*gorm.DB, error) {
+	return InitRASDB("application")
+}
+func InitRASStudentDB() (*gorm.DB, error) {
+	return InitRASDB("student")
 }
