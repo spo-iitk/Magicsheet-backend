@@ -19,8 +19,7 @@ type RASProforma struct {
 	CompanyID          uint   `gorm:"column:company_id"`
 	CompanyName        string `gorm:"column:company_name"`
 
-	IsApproved bool      `gorm:"column:is_approved"`
-	Deadline   time.Time `gorm:"column:deadline"`
+	IsApproved bool `gorm:"column:is_approved"`
 
 	Role    string `gorm:"column:role"`
 	Profile string `gorm:"column:profile"`

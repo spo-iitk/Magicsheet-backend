@@ -33,3 +33,20 @@ func (r *Repository) UpsertRecruitmentCycle(ctx context.Context, rc *database.Re
 
 	return r.db.WithContext(ctx).Model(&existing).Updates(rc).Error
 }
+
+func (r *Repository) UpsertProforma(ctx context.Context, p *database.Proforma) error {
+
+	var existing database.Proforma
+
+	err := r.db.WithContext(ctx).First(&existing, p.ID).Error
+
+	if err == gorm.ErrRecordNotFound {
+		return r.db.WithContext(ctx).Create(p).Error
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return r.db.WithContext(ctx).Model(&existing).Updates(p).Error
+}

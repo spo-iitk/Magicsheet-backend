@@ -33,6 +33,19 @@ func (s *Service) SyncProformas(ctx context.Context) error {
 		if err := s.repo.UpsertRecruitmentCycle(ctx, &pibsRc); err != nil {
 			return err
 		}
+
+		proformas, err := s.rasRepo.GetProformas(ctx, rasRc.ID)
+		if err != nil {
+			return err
+		}
+
+		for _, rasProformas := range proformas {
+			pibsProforma := mapProforma(rasProformas)
+
+			if err := s.repo.UpsertProforma(ctx, &pibsProforma); err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
