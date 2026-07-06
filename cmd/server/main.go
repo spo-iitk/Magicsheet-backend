@@ -7,6 +7,7 @@ import (
 	"github.com/spo-iitk/Magicsheet-backend/internal/auth"
 	"github.com/spo-iitk/Magicsheet-backend/internal/database"
 	"github.com/spo-iitk/Magicsheet-backend/internal/middleware"
+	"github.com/spo-iitk/Magicsheet-backend/internal/rc"
 	"github.com/spo-iitk/Magicsheet-backend/internal/sync"
 )
 
@@ -55,6 +56,12 @@ func main() {
 	syncService := sync.NewService(syncRepo, rasRepo)
 	syncHandler := sync.NewHandler(syncService)
 	sync.RegisterRoutes(api, syncHandler)
+
+	// recruitment cycles
+	rcRepo := rc.NewRepository(pibsDB)
+	rcService := rc.NewService(rcRepo)
+	rcHandler := rc.NewHandler(rcService)
+	rc.RegisterRoutes(api, rcHandler)
 
 	if err := database.AutoMigrate(pibsDB); err != nil {
 		panic(err)
