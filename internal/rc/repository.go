@@ -33,10 +33,7 @@ func (r *Repository) GetProformasByRecruitmentCycleID(ctx context.Context, rcID 
 	return proformas, nil
 }
 
-// GetProformasByRole returns all proformas for a given RC that are assigned to a specific
-// user (identified by userID) with the given assignment role ("apc" or "coco").
-// It joins proformas with coordinator_assignments so only proformas the user is
-// actually assigned to are returned, along with the assignment's IsActive flag.
+// GetProformasByRole returns proformas in an RC assigned to userID with the given role.
 func (r *Repository) GetProformasByRole(
 	ctx context.Context,
 	rcID string,
@@ -44,19 +41,17 @@ func (r *Repository) GetProformasByRole(
 	assignmentRole database.AssignmentRole,
 ) ([]ProformaWithAssignment, error) {
 	type row struct {
-		// Proforma fields
-		ProformaID          uint   `gorm:"column:proforma_id"`
-		Title               string `gorm:"column:title"`
-		RoleOffered         string `gorm:"column:role_offered"`
-		Description         string `gorm:"column:description"`
-		ProformaType        string `gorm:"column:proforma_type"`
-		IsInterviewActive   bool   `gorm:"column:is_interview_active"`
-		RecruitmentCycleID  uint   `gorm:"column:recruitment_cycle_id"`
-		CompanyID           uint   `gorm:"column:company_id"`
-		// Assignment fields
-		AssignmentID        uint                   `gorm:"column:assignment_id"`
-		AssignmentRole      database.AssignmentRole `gorm:"column:assignment_role"`
-		AssignmentIsActive  bool                   `gorm:"column:assignment_is_active"`
+		ProformaID         uint                    `gorm:"column:proforma_id"`
+		Title              string                  `gorm:"column:title"`
+		RoleOffered        string                  `gorm:"column:role_offered"`
+		Description        string                  `gorm:"column:description"`
+		ProformaType       string                  `gorm:"column:proforma_type"`
+		IsInterviewActive  bool                    `gorm:"column:is_interview_active"`
+		RecruitmentCycleID uint                    `gorm:"column:recruitment_cycle_id"`
+		CompanyID          uint                    `gorm:"column:company_id"`
+		AssignmentID       uint                    `gorm:"column:assignment_id"`
+		AssignmentRole     database.AssignmentRole `gorm:"column:assignment_role"`
+		AssignmentIsActive bool                    `gorm:"column:assignment_is_active"`
 	}
 
 	var rows []row
@@ -101,20 +96,4 @@ func (r *Repository) GetProformasByRole(
 		})
 	}
 	return result, nil
-}
-
-// ProformaWithAssignment is the projection returned by GetProformasByRole.
-type ProformaWithAssignment struct {
-	ID                 uint   `json:"id"`
-	RecruitmentCycleID uint   `json:"recruitment_cycle_id"`
-	CompanyID          uint   `json:"company_id"`
-	Title              string `json:"title"`
-	RoleOffered        string `json:"role_offered"`
-	Description        string `json:"description"`
-	ProformaType       string `json:"proforma_type"`
-	IsInterviewActive  bool   `json:"is_interview_active"`
-	// Assignment metadata
-	AssignmentID       uint   `json:"assignment_id"`
-	AssignmentRole     string `json:"assignment_role"`
-	AssignmentIsActive bool   `json:"assignment_is_active"`
 }

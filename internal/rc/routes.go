@@ -9,14 +9,20 @@ import (
 func RegisterRoutes(api *gin.RouterGroup, handler *Handler) {
 	r := api.Group("/rc")
 
-	// Public-ish: OPC proforma list and active cycles (uses its own auth elsewhere)
+	// Public-ish: OPC proforma list and active cycles
 	r.GET("/", handler.ListActive)
 	r.GET("/:id/opc/proforma", handler.GetProforma)
 
 	// Protected: APC and CoCo role-filtered proforma list
-	// GET /api/rc/:id/:role/proforma  (role = "apc" | "coco")
 	protected := r.Group("/:id")
 	protected.Use(auth.AuthMiddleware())
 	protected.Use(middleware.RequireRoles("apc", "coco", "god"))
 	protected.GET("/:role/proforma", handler.GetProformaByRole)
+
+	// Protected: assign a proforma to a user (opc or apc only)
+	assign := r.Group("/:id")
+	assign.Use(auth.AuthMiddleware())
+	assign.Use(middleware.RequireRoles("opc", "apc"))
+	assign.POST("/assign", handler.AssignMagicsheet)
+	assign.GET("/unassigned/:role", handler.GetUnassignedUsers)
 }
