@@ -109,7 +109,6 @@ type Proforma struct {
 	RecruitmentCycleID uint             `gorm:"not null;index:idx_proforma_cycle" json:"recruitment_cycle_id"`
 	RecruitmentCycle   RecruitmentCycle `gorm:"constraint:OnDelete:RESTRICT" json:"recruitment_cycle,omitempty"`
 
-	CompanyID uint `gorm:"not null;index:idx_proforma_company" json:"company_id"`
 
 	Title             string    `gorm:"type:varchar(255);not null" json:"title"`
 	RoleOffered       string    `gorm:"type:varchar(255)" json:"role_offered"`

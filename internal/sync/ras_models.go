@@ -16,7 +16,6 @@ type RASProforma struct {
 	UpdatedAt time.Time `gorm:"column:updated_at"`
 
 	RecruitmentCycleID uint   `gorm:"column:recruitment_cycle_id"`
-	CompanyID          uint   `gorm:"column:company_id"`
 	CompanyName        string `gorm:"column:company_name"`
 
 	IsApproved bool `gorm:"column:is_approved"`
