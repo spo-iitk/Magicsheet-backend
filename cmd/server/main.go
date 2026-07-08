@@ -1,6 +1,10 @@
 package main
 
 import (
+	"log"
+	"path/filepath"
+	"runtime"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -12,8 +16,8 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load("../../.env"); err != nil {
-		godotenv.Load(".env")
+	if err := loadEnvFile(); err != nil {
+		log.Printf("warning: could not load .env file: %v", err)
 	}
 
 	//creating router
@@ -74,4 +78,20 @@ func main() {
 	})
 
 	r.Run(":8080")
+}
+
+func loadEnvFile() error {
+	_, currentFile, _, ok := runtime.Caller(0)
+	if ok {
+		projectRootEnv := filepath.Join(filepath.Dir(filepath.Dir(filepath.Dir(currentFile))), ".env")
+		if err := godotenv.Load(projectRootEnv); err == nil {
+			return nil
+		}
+	}
+
+	if err := godotenv.Load(".env"); err == nil {
+		return nil
+	}
+
+	return godotenv.Load("../../.env")
 }

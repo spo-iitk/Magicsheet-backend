@@ -1,8 +1,7 @@
 package rc
 
 import (
-	"erro
-	"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -73,16 +72,4 @@ func (h *Handler) GetProformaByRole(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, proformas)
-}}		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-		return
-	}
-
-	c.JSON(http.StatusOK, resp)
-}		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-		return
-	}
-
-	c.JSON(http.StatusOK, resp)
 }
