@@ -87,6 +87,8 @@ func (s *Service) AssignMagicsheet(
 	switch callerRole {
 	case "opc":
 		// opc can assign apc or coco
+	case "god":
+		// god can assign apc or coco
 	case "apc":
 		if req.TargetRole != "coco" {
 			return nil, ErrForbiddenAssign

@@ -48,7 +48,6 @@ func (r *Repository) GetProformasByRole(
 		ProformaType       string                  `gorm:"column:proforma_type"`
 		IsInterviewActive  bool                    `gorm:"column:is_interview_active"`
 		RecruitmentCycleID uint                    `gorm:"column:recruitment_cycle_id"`
-		CompanyID          uint                    `gorm:"column:company_id"`
 		AssignmentID       uint                    `gorm:"column:assignment_id"`
 		AssignmentRole     database.AssignmentRole `gorm:"column:assignment_role"`
 		AssignmentIsActive bool                    `gorm:"column:assignment_is_active"`
@@ -84,7 +83,6 @@ func (r *Repository) GetProformasByRole(
 		result = append(result, ProformaWithAssignment{
 			ID:                 r.ProformaID,
 			RecruitmentCycleID: r.RecruitmentCycleID,
-			CompanyID:          r.CompanyID,
 			Title:              r.Title,
 			RoleOffered:        r.RoleOffered,
 			Description:        r.Description,

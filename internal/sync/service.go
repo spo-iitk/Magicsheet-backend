@@ -84,7 +84,6 @@ func mapProforma(p RASProforma) database.Proforma {
 		ID:                 p.ID,
 		RecruitmentCycleID: p.RecruitmentCycleID,
 
-		CompanyID: p.CompanyID,
 
 		Title:       p.CompanyName,
 		RoleOffered: p.Role,
