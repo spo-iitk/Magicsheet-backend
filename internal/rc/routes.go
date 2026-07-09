@@ -22,7 +22,7 @@ func RegisterRoutes(api *gin.RouterGroup, handler *Handler) {
 	// Protected: assign a proforma to a user (opc or apc only)
 	assign := r.Group("/:id")
 	assign.Use(auth.AuthMiddleware())
-	assign.Use(middleware.RequireRoles("opc", "apc"))
+	assign.Use(middleware.RequireRoles("god","opc", "apc"))
 	assign.POST("/assign", handler.AssignMagicsheet)
 	assign.GET("/unassigned/:role", handler.GetUnassignedUsers)
 	assign.GET("/assigned", handler.GetAssignedUsers)
