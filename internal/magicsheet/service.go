@@ -1,6 +1,10 @@
 package magicsheet
 
-import "github.com/spo-iitk/Magicsheet-backend/internal/database"
+import (
+	"context"
+
+	"github.com/spo-iitk/Magicsheet-backend/internal/database"
+)
 
 type Service struct {
 	repo *Repository
@@ -11,24 +15,57 @@ func NewService(repo *Repository) *Service {
 		repo: repo,
 	}
 }
+func (s *Service) GetMagicSheet(ctx context.Context, proformaID uint) (*GetMagicSheetResponse, error) {
+	proforma, err := s.repo.GetProforma(ctx, proformaID)
+	if err != nil {
+		return nil, err
+	}
 
-func (s *Service) GetMagicSheet(proformaID uint) (*GetMagicSheetResponse, error) {
+	rounds, err := s.repo.GetInterviewRounds(ctx, proformaID)
+	if err != nil {
+		return nil, err
+	}
+
+	candidates, err := s.repo.GetCandidates(ctx, proformaID)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMagicSheetResponse{
+		Proforma:   mapProforma(*proforma),
+		Rounds:     mapRounds(rounds),
+		Candidates: mapCandidates(candidates),
+	}
+
+	return response, nil
+}
+
+func (s *Service) RegisterCandidate(
+	ctx context.Context,
+	proformaID uint,
+	rollNumber string,
+) (*CandidateDTO, error) {
 	panic("not implemented")
 }
 
-func (s *Service) RegisterCandidate(proformaID uint, rollNumber string) (*CandidateDTO, error) {
+func (s *Service) CheckIn(
+	ctx context.Context,
+	proformaID uint,
+	sessionID uint,
+) (*InterviewSessionDTO, error) {
 	panic("not implemented")
 }
 
-func (s *Service) CheckIn(proformaID uint, sessionID uint) (*InterviewSessionDTO, error) {
-	panic("not implemented")
-}
-
-func (s *Service) CheckOut(proformaID uint, sessionID uint) (*InterviewSessionDTO, error) {
+func (s *Service) CheckOut(
+	ctx context.Context,
+	proformaID uint,
+	sessionID uint,
+) (*InterviewSessionDTO, error) {
 	panic("not implemented")
 }
 
 func (s *Service) UpdateSessionResult(
+	ctx context.Context,
 	proformaID uint,
 	sessionID uint,
 	status database.SessionStatus,
@@ -36,6 +73,10 @@ func (s *Service) UpdateSessionResult(
 	panic("not implemented")
 }
 
-func (s *Service) CreateRound(proformaID uint, name string) (*RoundDTO, error) {
+func (s *Service) CreateRound(
+	ctx context.Context,
+	proformaID uint,
+	name string,
+) (*RoundDTO, error) {
 	panic("not implemented")
 }

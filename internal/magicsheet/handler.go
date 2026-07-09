@@ -1,6 +1,11 @@
 package magicsheet
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
 
 type Handler struct {
 	service *Service
@@ -12,7 +17,29 @@ func NewHandler(service *Service) *Handler {
 	}
 }
 
-func (h *Handler) GetMagicSheet(c *gin.Context) {}
+func (h *Handler) GetMagicSheet(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	proformaID, err := getUintParam(c, "proformaID")
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid proforma id",
+		})
+		return
+	}
+
+	response, err := h.service.GetMagicSheet(ctx, proformaID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}
 
 func (h *Handler) RegisterCandidate(c *gin.Context) {}
 
@@ -23,3 +50,13 @@ func (h *Handler) CheckOut(c *gin.Context) {}
 func (h *Handler) UpdateSessionResult(c *gin.Context) {}
 
 func (h *Handler) CreateRound(c *gin.Context) {}
+
+func getUintParam(c *gin.Context, key string) (uint, error) {
+	value, err := strconv.ParseUint(c.Param(key), 10, 32)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return uint(value), nil
+}

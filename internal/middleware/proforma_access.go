@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 
@@ -8,7 +9,7 @@ import (
 )
 
 type ProformaAccessChecker interface {
-	HasProformaAccess(userID uint, proformaID uint) (bool, error)
+	HasProformaAccess(ctx context.Context, userID uint, proformaID uint) (bool, error)
 }
 
 func RequireProformaAccess(checker ProformaAccessChecker) gin.HandlerFunc {
@@ -29,7 +30,7 @@ func RequireProformaAccess(checker ProformaAccessChecker) gin.HandlerFunc {
 
 		proformaID := uint(proformaID64)
 
-		hasAccess, err := checker.HasProformaAccess(userID, proformaID)
+		hasAccess, err := checker.HasProformaAccess(c.Request.Context(), userID, proformaID)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{

@@ -1,0 +1,40 @@
+=== Sample Proformas ===
+  id  |          created_at           |          updated_at           | deleted_at | recruitment_cycle_id | company_id |                 title                 |         role_offered          |                      description                      | proforma_type | is_interview_active |        last_synced_at         
+------+-------------------------------+-------------------------------+------------+----------------------+------------+---------------------------------------+-------------------------------+-------------------------------------------------------+---------------+---------------------+-------------------------------
+ 5353 | 2026-07-05 13:59:31.250708+00 | 2026-07-08 12:21:25.087224+00 |            |                   16 |        675 | Allen Career Institute Pvt. Ltd       | Edutech                       | Trainee Faculty ( Physics, Chemistry and Mathematics) |               | f                   | 2026-07-08 12:21:25.08703+00
+ 5461 | 2026-07-05 13:59:31.251937+00 | 2026-07-08 12:21:25.087754+00 |            |                   16 |        345 | Micron Technology                     | Core Engineering & Technology | Process Development Engineer                          |               | f                   | 2026-07-08 12:21:25.087573+00
+ 5319 | 2026-07-05 13:59:31.253293+00 | 2026-07-08 12:21:25.088258+00 |            |                   16 |        545 | Accenture Solutions Pvt Ltd - Data AI | Finance & Consulting          | FTE (Grad) | FY 25 Data & AI                          |               | f                   | 2026-07-08 12:21:25.088035+00
+ 5355 | 2026-07-05 13:59:31.254386+00 | 2026-07-08 12:21:25.089213+00 |            |                   16 |        114 | Infosys Limited                       | Core Engineering & Technology |                                                       |               | f                   | 2026-07-08 12:21:25.088829+00
+ 5356 | 2026-07-05 13:59:31.255511+00 | 2026-07-08 12:21:25.090258+00 |            |                   16 |        114 | Infosys Limited                       | Core Engineering & Technology | Analyst - Business Consulting                         |               | f                   | 2026-07-08 12:21:25.08989+00
+(5 rows)
+
+=== Sample Students ===
+  id  |          created_at           |          updated_at           | deleted_at | roll_number |           name            | department | program |          email          |   phone    | current_status | is_frozen |        last_synced_at         
+------+-------------------------------+-------------------------------+------------+-------------+---------------------------+------------+---------+-------------------------+------------+----------------+-----------+-------------------------------
+ 8360 | 2026-07-05 23:31:59.31041+00  | 2026-07-08 12:21:36.26405+00  |            | 241020007   | Atharv Vishwajit Nigudkar | CHE        | MT      | atharv24@iitk.ac.in     | 9870809809 | available      | f         | 2026-07-08 12:21:36.263663+00
+ 6410 | 2026-07-05 23:31:59.311213+00 | 2026-07-08 12:21:36.265223+00 |            | 231120010   | Priyanshi Gautam          | MSP        | MT      | priyanshig23@iitk.ac.in | 9131894943 | available      | f         | 2026-07-08 12:21:36.264738+00
+ 6653 | 2026-07-05 23:31:59.312051+00 | 2026-07-08 12:21:36.266021+00 |            | 231230002   | Bharat Sharma             | ES         | MT      | sbharat23@iitk.ac.in    | 7060048211 | available      | f         | 2026-07-08 12:21:36.265675+00
+ 6652 | 2026-07-05 23:31:59.312892+00 | 2026-07-08 12:21:36.267363+00 |            | 231230010   | Rahul Raj                 | ES         | MT      | rahulraj23@iitk.ac.in   | 8800734832 | available      | f         | 2026-07-08 12:21:36.266545+00
+ 2654 | 2026-07-05 23:31:59.313752+00 | 2026-07-08 12:21:36.268432+00 |            | 190999      | Yash Laddha               | CE         | BT      | yladdha@iitk.ac.in      | 9660029912 | available      | f         | 2026-07-08 12:21:36.267969+00
+(5 rows)
+
+=== Sample Proforma Candidates ===
+ id | created_at | updated_at | proforma_id | student_id | source | added_by_id 
+----+------------+------------+-------------+------------+--------+-------------
+(0 rows)
+
+=== Sample Interview Rounds ===
+ id | created_at | updated_at | proforma_id | name | round_number 
+----+------------+------------+-------------+------+--------------
+(0 rows)
+
+=== Sample Interview Sessions ===
+ id | created_at | updated_at | proforma_candidate_id | proforma_id | round_id | conducted_by_id | in_time | out_time | status | remarks 
+----+------------+------------+-----------------------+-------------+----------+-----------------+---------+----------+--------+---------
+(0 rows)
+
+=== Sample Coordinator Assignments ===
+ id | created_at | updated_at | proforma_id | user_id | role | assigned_by_id | is_active 
+----+------------+------------+-------------+---------+------+----------------+-----------
+(0 rows)
+
