@@ -19,20 +19,21 @@ const (
 type StudentStatus string
 
 const (
-	StudentAvailable        StudentStatus = "available"
-	StudentInInterview      StudentStatus = "in_interview"
-	StudentWaitingNextRound StudentStatus = "waiting_for_next_round"
-	StudentFrozen           StudentStatus = "frozen"
+	StudentAvailable    StudentStatus = "available"
+	StudentInterviewing StudentStatus = "interviewing"
+	StudentFrozen       StudentStatus = "frozen"
 )
 
 type SessionStatus string
 
 const (
-	SessionWaiting    SessionStatus = "waiting"
-	SessionInProgress SessionStatus = "in_progress"
-	SessionCleared    SessionStatus = "cleared"
-	SessionHold       SessionStatus = "hold"
-	SessionAbsent     SessionStatus = "absent"
+	SessionPending       SessionStatus = "pending"
+	SessionCheckedIn     SessionStatus = "checked_in"
+	SessionCheckedOut    SessionStatus = "checked_out"
+	SessionResultPending SessionStatus = "result_pending"
+	SessionPassed        SessionStatus = "passed"
+	SessionRejected      SessionStatus = "rejected"
+	SessionAbsent        SessionStatus = "absent"
 )
 
 type CandidateSource string
@@ -108,7 +109,6 @@ type Proforma struct {
 
 	RecruitmentCycleID uint             `gorm:"not null;index:idx_proforma_cycle" json:"recruitment_cycle_id"`
 	RecruitmentCycle   RecruitmentCycle `gorm:"constraint:OnDelete:RESTRICT" json:"recruitment_cycle,omitempty"`
-
 
 	Title             string    `gorm:"type:varchar(255);not null" json:"title"`
 	RoleOffered       string    `gorm:"type:varchar(255)" json:"role_offered"`
