@@ -62,7 +62,8 @@ func (h *Handler) RegisterCandidate(c *gin.Context) {
 		return
 	}
 
-	candidate, err := h.service.RegisterCandidate(ctx, proformaID, req.RollNumber)
+	userID := c.GetUint("userID")
+	candidate, err := h.service.RegisterCandidate(ctx, userID, proformaID, req.RollNumber)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

@@ -51,7 +51,7 @@ func (s *Service) GetMagicSheet(ctx context.Context, proformaID uint) (*GetMagic
 	return response, nil
 }
 
-func (s *Service) RegisterCandidate(ctx context.Context, proformaID uint, rollNumber string) (*CandidateDTO, error) {
+func (s *Service) RegisterCandidate(ctx context.Context, userID uint, proformaID uint, rollNumber string) (*CandidateDTO, error) {
 	student, err := s.repo.GetStudentByRollNumber(ctx, rollNumber)
 
 	if err != nil {
@@ -88,6 +88,7 @@ func (s *Service) RegisterCandidate(ctx context.Context, proformaID uint, rollNu
 		proformaID,
 		student.ID,
 		rounds[0].ID,
+		userID,
 	)
 
 	if err != nil {

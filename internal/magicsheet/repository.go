@@ -100,7 +100,7 @@ func (r *Repository) CreateDefaultRounds(ctx context.Context, proformaID uint) e
 
 }
 
-func (r *Repository) RegisterCandidate(ctx context.Context, proformaID uint, studentID uint, roundID uint) (*database.ProformaCandidate, error) {
+func (r *Repository) RegisterCandidate(ctx context.Context, proformaID uint, studentID uint, roundID uint, addedByID uint) (*database.ProformaCandidate, error) {
 	var candidate database.ProformaCandidate
 
 	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -108,6 +108,7 @@ func (r *Repository) RegisterCandidate(ctx context.Context, proformaID uint, stu
 			ProformaID: proformaID,
 			StudentID:  studentID,
 			Source:     database.CandidateSourceManual,
+			AddedByID:  &addedByID,
 		}
 
 		if err := tx.Create(&candidate).Error; err != nil {
@@ -141,11 +142,16 @@ func (r *Repository) RegisterCandidate(ctx context.Context, proformaID uint, stu
 
 }
 
-func (r *Repository) GetStudentByRollNumber(
-	ctx context.Context,
-	rollNumber string,
-) (*database.Student, error) {
-	panic("not implemented")
+func (r *Repository) GetStudentByRollNumber(ctx context.Context, rollNumber string) (*database.Student, error) {
+	var student database.Student
+
+	err := r.db.WithContext(ctx).Where("roll_number = ?", rollNumber).First(&student).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &student, nil
 }
 
 func (r *Repository) CreateRound(
@@ -176,10 +182,14 @@ func (r *Repository) UpdateStudent(
 	panic("not implemented")
 }
 
-func (r *Repository) CandidateExists(
-	ctx context.Context,
-	proformaID uint,
-	studentID uint,
-) (bool, error) {
-	panic("not implemented")
+func (r *Repository) CandidateExists(ctx context.Context, proformaID uint, studentID uint) (bool, error) {
+	var count int64
+
+	err := r.db.WithContext(ctx).Model(&database.ProformaCandidate{}).Where("proforma_id = ? AND student_id = ?", proformaID, studentID).Count(&count).Error
+
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
 }
