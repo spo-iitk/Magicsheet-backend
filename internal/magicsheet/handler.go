@@ -41,7 +41,38 @@ func (h *Handler) GetMagicSheet(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func (h *Handler) RegisterCandidate(c *gin.Context) {}
+func (h *Handler) RegisterCandidate(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	proformaID, err := getUintParam(c, "proformaID")
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid proforma id",
+		})
+		return
+	}
+
+	var req RegisterCandidateRequest
+
+	if err := c.ShouldBindBodyWithJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid request body",
+		})
+		return
+	}
+
+	candidate, err := h.service.RegisterCandidate(ctx, proformaID, req.RollNumber)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, candidate)
+}
 
 func (h *Handler) CheckIn(c *gin.Context) {}
 

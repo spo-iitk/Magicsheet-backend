@@ -7,9 +7,9 @@ import (
 )
 
 type GetMagicSheetResponse struct {
-	Proforma   ProformaDTO     `json:"proforma"`
-	Rounds     []RoundDTO      `json:"rounds"`
-	Candidates []CandidatesDTO `json:"candidates"`
+	Proforma   ProformaDTO    `json:"proforma"`
+	Rounds     []RoundDTO     `json:"rounds"`
+	Candidates []CandidateDTO `json:"candidates"`
 }
 
 type ProformaDTO struct {
@@ -24,7 +24,7 @@ type RoundDTO struct {
 	Name        string `json:"name"`
 }
 
-type CandidatesDTO struct {
+type CandidateDTO struct {
 	CandidateID uint                  `json:"candidate_id"`
 	Student     StudentDTO            `json:"student"`
 	Sessions    []InterviewSessionDTO `json:"sessions"`
@@ -50,4 +50,8 @@ type InterviewSessionDTO struct {
 	OutTime *time.Time `json:"out_time"`
 
 	Remarks string `json:"remarks"`
+}
+
+type RegisterCandidateRequest struct {
+	RollNumber string `json:"roll_number" binding:"required"`
 }

@@ -187,9 +187,6 @@ type InterviewSession struct {
 	RoundID uint           `gorm:"not null;index:idx_session_round;uniqueIndex:idx_session_candidate_round" json:"round_id"`
 	Round   InterviewRound `gorm:"constraint:OnDelete:RESTRICT" json:"round,omitempty"`
 
-	ConductedByID uint `gorm:"not null;index:idx_session_conductor" json:"conducted_by_id"`
-	ConductedBy   User `gorm:"constraint:OnDelete:RESTRICT" json:"conducted_by,omitempty"`
-
 	InTime  *time.Time    `gorm:"index:idx_session_intime" json:"in_time"`
 	OutTime *time.Time    `json:"out_time"`
 	Status  SessionStatus `gorm:"type:varchar(20);default:'waiting';not null;index:idx_session_status" json:"status"`

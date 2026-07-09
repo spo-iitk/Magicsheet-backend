@@ -10,6 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spo-iitk/Magicsheet-backend/internal/auth"
 	"github.com/spo-iitk/Magicsheet-backend/internal/database"
+	"github.com/spo-iitk/Magicsheet-backend/internal/magicsheet"
 	"github.com/spo-iitk/Magicsheet-backend/internal/middleware"
 	"github.com/spo-iitk/Magicsheet-backend/internal/rc"
 	"github.com/spo-iitk/Magicsheet-backend/internal/sync"
@@ -66,6 +67,12 @@ func main() {
 	rcService := rc.NewService(rcRepo)
 	rcHandler := rc.NewHandler(rcService)
 	rc.RegisterRoutes(api, rcHandler)
+
+	magicRepo := magicsheet.NewRepository(pibsDB)
+	magicService := magicsheet.NewService(magicRepo)
+	magicHandler := magicsheet.NewHandler(magicService)
+
+	magicsheet.RegisterRoutes(api, magicHandler, magicRepo)
 
 	if err := database.AutoMigrate(pibsDB); err != nil {
 		panic(err)

@@ -26,6 +26,17 @@ func (s *Service) GetMagicSheet(ctx context.Context, proformaID uint) (*GetMagic
 		return nil, err
 	}
 
+	if len(rounds) == 0 {
+		if err := s.repo.CreateDefaultRounds(ctx, proformaID); err != nil {
+			return nil, err
+		}
+
+		rounds, err = s.repo.GetInterviewRounds(ctx, proformaID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	candidates, err := s.repo.GetCandidates(ctx, proformaID)
 	if err != nil {
 		return nil, err
@@ -40,12 +51,53 @@ func (s *Service) GetMagicSheet(ctx context.Context, proformaID uint) (*GetMagic
 	return response, nil
 }
 
-func (s *Service) RegisterCandidate(
-	ctx context.Context,
-	proformaID uint,
-	rollNumber string,
-) (*CandidateDTO, error) {
-	panic("not implemented")
+func (s *Service) RegisterCandidate(ctx context.Context, proformaID uint, rollNumber string) (*CandidateDTO, error) {
+	student, err := s.repo.GetStudentByRollNumber(ctx, rollNumber)
+
+	if err != nil {
+		return nil, err
+	}
+
+	exists, err := s.repo.CandidateExists(ctx, proformaID, student.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	if exists {
+		return nil, ErrCandidateAlreadyRegistered
+	}
+
+	rounds, err := s.repo.GetInterviewRounds(ctx, proformaID)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(rounds) == 0 {
+		if err := s.repo.CreateDefaultRounds(ctx, proformaID); err != nil {
+			return nil, err
+		}
+
+		rounds, err = s.repo.GetInterviewRounds(ctx, proformaID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	candidate, err := s.repo.RegisterCandidate(
+		ctx,
+		proformaID,
+		student.ID,
+		rounds[0].ID,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	dto := mapCandidate(*candidate)
+
+	return &dto, nil
+
 }
 
 func (s *Service) CheckIn(

@@ -138,7 +138,6 @@ Table interview_sessions {
   proforma_candidate_id bigint [not null]
   proforma_id bigint [not null]
   round_id bigint [not null]
-  conducted_by_id bigint [not null]
   in_time timestamptz
   out_time timestamptz
   status varchar(20) [not null, default: 'waiting']
@@ -149,7 +148,6 @@ Table interview_sessions {
     proforma_candidate_id [name: 'idx_session_candidate']
     proforma_id [unique, name: 'idx_candidate_proforma_student']
     round_id [name: 'idx_session_round']
-    conducted_by_id [name: 'idx_session_conductor']
     in_time [name: 'idx_session_intime']
     status [name: 'idx_session_status']
   }
@@ -182,7 +180,6 @@ Ref: interview_rounds.proforma_id > proformas.id [delete: cascade]
 Ref: interview_sessions.proforma_candidate_id > proforma_candidates.id [delete: restrict]
 Ref: interview_sessions.proforma_id > proformas.id [delete: cascade]
 Ref: interview_sessions.round_id > interview_rounds.id [delete: restrict]
-Ref: interview_sessions.conducted_by_id > users.id [delete: restrict]
 Ref: coordinator_assignments.proforma_id > proformas.id [delete: cascade]
 Ref: coordinator_assignments.user_id > users.id [delete: restrict]
 Ref: coordinator_assignments.assigned_by_id > users.id [delete: restrict]

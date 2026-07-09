@@ -60,7 +60,9 @@ func (r *Repository) GetInterviewRounds(ctx context.Context, proformaID uint) ([
 func (r *Repository) GetCandidates(ctx context.Context, proformaID uint) ([]database.ProformaCandidate, error) {
 	var candidates []database.ProformaCandidate
 
-	err := r.db.WithContext(ctx).Preload("Student").Preload("InterviewSessions").Where("proforma_id = ?", proformaID).Find(&candidates).Error
+	err := r.db.WithContext(ctx).Preload("Student").Preload("InterviewSessions", func(db *gorm.DB) *gorm.DB {
+		return db.Order("round_id ASC")
+	}).Where("proforma_id = ?", proformaID).Find(&candidates).Error
 
 	if err != nil {
 		return nil, err
@@ -68,17 +70,81 @@ func (r *Repository) GetCandidates(ctx context.Context, proformaID uint) ([]data
 	return candidates, nil
 }
 
+func (r *Repository) CreateDefaultRounds(ctx context.Context, proformaID uint) error {
+
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		rounds := []database.InterviewRound{
+			{
+				ProformaID:  proformaID,
+				RoundNumber: 1,
+				Name:        "Round 1",
+			},
+			{
+				ProformaID:  proformaID,
+				RoundNumber: 2,
+				Name:        "Round 2",
+			},
+			{
+				ProformaID:  proformaID,
+				RoundNumber: 3,
+				Name:        "Round 3",
+			},
+		}
+
+		if err := tx.Create(&rounds).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+}
+
+func (r *Repository) RegisterCandidate(ctx context.Context, proformaID uint, studentID uint, roundID uint) (*database.ProformaCandidate, error) {
+	var candidate database.ProformaCandidate
+
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		candidate = database.ProformaCandidate{
+			ProformaID: proformaID,
+			StudentID:  studentID,
+			Source:     database.CandidateSourceManual,
+		}
+
+		if err := tx.Create(&candidate).Error; err != nil {
+			return err
+		}
+
+		session := database.InterviewSession{
+			ProformaID:          proformaID,
+			ProformaCandidateID: candidate.ID,
+			RoundID:             roundID,
+			Status:              database.SessionPending,
+		}
+
+		if err := tx.Create(&session).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Preload("Student").Preload("InterviewSessions", func(db *gorm.DB) *gorm.DB {
+			return db.Order("round_id ASC")
+		}).First(&candidate, candidate.ID).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &candidate, nil
+
+}
+
 func (r *Repository) GetStudentByRollNumber(
 	ctx context.Context,
 	rollNumber string,
 ) (*database.Student, error) {
-	panic("not implemented")
-}
-
-func (r *Repository) CreateCandidate(
-	ctx context.Context,
-	candidate *database.ProformaCandidate,
-) error {
 	panic("not implemented")
 }
 
@@ -93,13 +159,6 @@ func (r *Repository) GetInterviewSession(
 	ctx context.Context,
 	sessionID uint,
 ) (*database.InterviewSession, error) {
-	panic("not implemented")
-}
-
-func (r *Repository) CreateInterviewSession(
-	ctx context.Context,
-	session *database.InterviewSession,
-) error {
 	panic("not implemented")
 }
 
