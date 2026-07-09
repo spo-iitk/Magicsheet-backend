@@ -52,6 +52,60 @@ func (r *Repository) GetUnassignedUsersByRole(ctx context.Context, proformaID ui
 	return users, nil
 }
 
+// GetAssignedUsersByProforma returns all active assignments for a proforma, joining user details.
+func (r *Repository) GetAssignedUsersByProforma(ctx context.Context, proformaID uint) ([]AssignedUser, error) {
+	type row struct {
+		UserID   uint   `gorm:"column:user_id"`
+		Name     string `gorm:"column:name"`
+		Email    string `gorm:"column:email"`
+		Role     string `gorm:"column:role"`
+	}
+	var rows []row
+	err := r.db.WithContext(ctx).
+		Table("coordinator_assignments").
+		Select("coordinator_assignments.user_id, users.name, users.email, coordinator_assignments.role").
+		Joins("JOIN users ON users.id = coordinator_assignments.user_id").
+		Where("coordinator_assignments.proforma_id = ? AND coordinator_assignments.is_active = ?", proformaID, true).
+		Scan(&rows).Error
+	if err != nil {
+		return nil, err
+	}
+	out := make([]AssignedUser, 0, len(rows))
+	for _, r := range rows {
+		out = append(out, AssignedUser{ID: r.UserID, Name: r.Name, Email: r.Email, Role: r.Role})
+	}
+	return out, nil
+}
+
+// GetAssignedUsers handles GET /rc/:id/assigned?proforma_id=X
+func (h *Handler) GetAssignedUsers(c *gin.Context) {
+	rcIDStr := c.Param("id")
+	proformaIDStr := c.Query("proforma_id")
+
+	var rcID, proformaID uint
+	if _, err := fmt.Sscan(rcIDStr, &rcID); err != nil || rcID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid recruitment cycle id"})
+		return
+	}
+	if _, err := fmt.Sscan(proformaIDStr, &proformaID); err != nil || proformaID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "proforma_id query param required"})
+		return
+	}
+
+	if _, err := h.service.repo.GetProformaByIDAndCycle(c.Request.Context(), proformaID, rcID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "proforma does not belong to this recruitment cycle"})
+		return
+	}
+
+	assigned, err := h.service.repo.GetAssignedUsersByProforma(c.Request.Context(), proformaID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, assigned)
+}
+
+
 // GetAssignment returns an existing CoordinatorAssignment for (proforma, user, role), or nil if not found.
 func (r *Repository) GetAssignment(ctx context.Context, proformaID, userID uint, role database.AssignmentRole) (*database.CoordinatorAssignment, error) {
 	var a database.CoordinatorAssignment

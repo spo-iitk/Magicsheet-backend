@@ -23,10 +23,19 @@ type UserOption struct {
 	Email string `json:"email"`
 }
 
+// AssignedUser is a user already assigned to a proforma.
+type AssignedUser struct {
+	ID    uint   `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Role  string `json:"role"` // "apc" or "coco"
+}
+
 // ProformaWithAssignment is the projection returned by GetProformasByRole.
 type ProformaWithAssignment struct {
 	ID                 uint   `json:"id"`
 	RecruitmentCycleID uint   `json:"recruitment_cycle_id"`
+	
 	Title              string `json:"title"`
 	RoleOffered        string `json:"role_offered"`
 	Description        string `json:"description"`
