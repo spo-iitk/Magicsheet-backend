@@ -84,7 +84,6 @@ Table proformas {
   deleted_at timestamptz
   recruitment_cycle_id bigint [not null]
   external_id varchar(225) [not null]
-  company_id bigint [not null]
   title varchar(255) [not null]
   role_offered varchar(255)
   description text
@@ -96,7 +95,6 @@ Table proformas {
     deleted_at [name: 'idx_proformas_deleted_at']
     recruitment_cycle_id [name: 'idx_proforma_cycle']
     external_id [unique, name: 'idx_proforma_ext']
-    company_id [name: 'idx_proforma_company']
     proforma_type [name: 'idx_proforma_type']
     is_interview_active [name: 'idx_proforma_active']
   }

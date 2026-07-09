@@ -90,7 +90,6 @@ CREATE TABLE proformas (
     deleted_at timestamptz,
     recruitment_cycle_id bigint NOT NULL,
     external_id varchar(225) NOT NULL,
-    company_id bigint NOT NULL,
     title varchar(255) NOT NULL,
     role_offered varchar(255),
     description text,
@@ -107,7 +106,6 @@ CREATE TABLE proformas (
 CREATE INDEX idx_proformas_deleted_at ON proformas (deleted_at);
 CREATE INDEX idx_proforma_cycle ON proformas (recruitment_cycle_id);
 CREATE UNIQUE INDEX idx_proforma_ext ON proformas (external_id);
-CREATE INDEX idx_proforma_company ON proformas (company_id);
 CREATE INDEX idx_proforma_type ON proformas (proforma_type);
 CREATE INDEX idx_proforma_active ON proformas (is_interview_active);
 

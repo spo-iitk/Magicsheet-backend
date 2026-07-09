@@ -59,7 +59,7 @@ func (r *Repository) GetProformasByRole(
 		Select(
 			"proformas.id AS proforma_id, proformas.title, proformas.role_offered, "+
 				"proformas.description, proformas.proforma_type, proformas.is_interview_active, "+
-				"proformas.recruitment_cycle_id, proformas.company_id, "+
+				"proformas.recruitment_cycle_id , "+
 				"coordinator_assignments.id AS assignment_id, "+
 				"coordinator_assignments.role AS assignment_role, "+
 				"coordinator_assignments.is_active AS assignment_is_active",
