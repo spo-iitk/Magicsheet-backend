@@ -16,7 +16,12 @@ func RequireProformaAccess(checker ProformaAccessChecker) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		userID := c.GetUint("userID")
-
+        
+		role := c.GetString("role")
+		if role == "opc" || role == "god" {
+			c.Next()
+			return
+		}
 		proformaIDStr := c.Param("proformaID")
 
 		proformaID64, err := strconv.ParseUint(proformaIDStr, 10, 32)
