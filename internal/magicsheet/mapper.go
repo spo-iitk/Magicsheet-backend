@@ -61,14 +61,18 @@ func mapInterviewSessions(sessions []database.InterviewSession) []InterviewSessi
 	result := make([]InterviewSessionDTO, 0, len(sessions))
 
 	for _, session := range sessions {
-		result = append(result, InterviewSessionDTO{
-			ID:      session.ID,
-			RoundID: session.RoundID,
-			Status:  session.Status,
-			InTime:  session.InTime,
-			OutTime: session.OutTime,
-			Remarks: session.Remarks,
-		})
+		result = append(result, mapSession(session))
 	}
 	return result
+}
+
+func mapSession(session database.InterviewSession) InterviewSessionDTO {
+	return InterviewSessionDTO{
+		ID:      session.ID,
+		RoundID: session.RoundID,
+		Status:  session.Status,
+		InTime:  session.InTime,
+		OutTime: session.OutTime,
+		Remarks: session.Remarks,
+	}
 }

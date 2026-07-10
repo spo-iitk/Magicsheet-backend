@@ -2,6 +2,7 @@ package magicsheet
 
 import (
 	"context"
+	"time"
 
 	"github.com/spo-iitk/Magicsheet-backend/internal/database"
 	"gorm.io/gorm"
@@ -100,6 +101,30 @@ func (r *Repository) CreateDefaultRounds(ctx context.Context, proformaID uint) e
 
 }
 
+func (r *Repository) GetStudentByRollNumber(ctx context.Context, rollNumber string) (*database.Student, error) {
+	var student database.Student
+
+	err := r.db.WithContext(ctx).Where("roll_number = ?", rollNumber).First(&student).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &student, nil
+}
+
+func (r *Repository) CandidateExists(ctx context.Context, proformaID uint, studentID uint) (bool, error) {
+	var count int64
+
+	err := r.db.WithContext(ctx).Model(&database.ProformaCandidate{}).Where("proforma_id = ? AND student_id = ?", proformaID, studentID).Count(&count).Error
+
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}
+
 func (r *Repository) RegisterCandidate(ctx context.Context, proformaID uint, studentID uint, roundID uint, addedByID uint) (*database.ProformaCandidate, error) {
 	var candidate database.ProformaCandidate
 
@@ -142,17 +167,53 @@ func (r *Repository) RegisterCandidate(ctx context.Context, proformaID uint, stu
 
 }
 
-func (r *Repository) GetStudentByRollNumber(ctx context.Context, rollNumber string) (*database.Student, error) {
-	var student database.Student
+func (r *Repository) CheckIn(ctx context.Context, sessionID uint) (*database.InterviewSession, error) {
+	var session database.InterviewSession
 
-	err := r.db.WithContext(ctx).Where("roll_number = ?", rollNumber).First(&student).Error
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Preload("Round").Preload("ProformaCandidate.Student").First(&session, sessionID).Error; err != nil {
+			return err
+		}
+		if session.Status != database.SessionPending {
+			return ErrInvalidSessionState
+		}
+
+		now := time.Now()
+
+		session.Status = database.SessionCheckedIn
+		session.InTime = &now
+
+		if err := tx.Save(&session).Error; err != nil {
+			return err
+		}
+
+		student := session.ProformaCandidate.Student
+
+		student.CurrentStatus = database.StudentInterviewing
+
+		if err := tx.Save(&student).Error; err != nil {
+			return err
+		}
+
+		if err := tx.First(&session, sessionID).Error; err != nil {
+			return err
+		}
+
+		return nil
+
+	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &student, nil
+	return &session, nil
+
 }
+
+func (r *Repository) CheckOut(ctx context.Context, sessionID uint) (*database.InterviewSession, error)
+
+func (r *Repository) UpdateSessionResult(ctx context.Context, sessionID uint, status database.SessionStatus) (*database.InterviewSession, error)
 
 func (r *Repository) CreateRound(
 	ctx context.Context,
@@ -168,28 +229,9 @@ func (r *Repository) GetInterviewSession(
 	panic("not implemented")
 }
 
-func (r *Repository) UpdateInterviewSession(
-	ctx context.Context,
-	session *database.InterviewSession,
-) error {
-	panic("not implemented")
-}
-
 func (r *Repository) UpdateStudent(
 	ctx context.Context,
 	student *database.Student,
 ) error {
 	panic("not implemented")
-}
-
-func (r *Repository) CandidateExists(ctx context.Context, proformaID uint, studentID uint) (bool, error) {
-	var count int64
-
-	err := r.db.WithContext(ctx).Model(&database.ProformaCandidate{}).Where("proforma_id = ? AND student_id = ?", proformaID, studentID).Count(&count).Error
-
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
 }

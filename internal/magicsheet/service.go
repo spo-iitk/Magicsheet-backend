@@ -101,12 +101,15 @@ func (s *Service) RegisterCandidate(ctx context.Context, userID uint, proformaID
 
 }
 
-func (s *Service) CheckIn(
-	ctx context.Context,
-	proformaID uint,
-	sessionID uint,
-) (*InterviewSessionDTO, error) {
-	panic("not implemented")
+func (s *Service) CheckIn(ctx context.Context, proformaID uint, sessionID uint) (*InterviewSessionDTO, error) {
+	session, err := s.repo.CheckIn(ctx, sessionID)
+	if err != nil {
+		return nil, err
+	}
+
+	dto := mapSession(*session)
+
+	return &dto, nil
 }
 
 func (s *Service) CheckOut(

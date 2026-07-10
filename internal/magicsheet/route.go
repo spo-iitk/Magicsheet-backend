@@ -15,8 +15,9 @@ func RegisterRoutes(router *gin.RouterGroup, handler *Handler, accessChecker mid
 
 	protected.GET("", handler.GetMagicSheet)
 	protected.POST("/register", handler.RegisterCandidate)
-	protected.POST("/check-in", handler.CheckIn)
-	protected.POST("/check-out", handler.CheckOut)
-	protected.POST("/result", handler.UpdateSessionResult)
+	protected.POST("/sessions/:sessionID/check-in", handler.CheckIn)
+	protected.POST("/sessions/:sessionID/check-out", handler.CheckOut)
+	protected.POST("/sessions/:sessionID/result", handler.UpdateSessionResult)
+
 	protected.POST("/rounds", handler.CreateRound)
 }

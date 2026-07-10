@@ -75,7 +75,36 @@ func (h *Handler) RegisterCandidate(c *gin.Context) {
 	c.JSON(http.StatusCreated, candidate)
 }
 
-func (h *Handler) CheckIn(c *gin.Context) {}
+func (h *Handler) CheckIn(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	proformaID, err := getUintParam(c, "proformaID")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid proforma id",
+		})
+		return
+	}
+
+	sessionID, err := getUintParam(c, "sessionID")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid session id",
+		})
+		return
+	}
+
+	response, err := h.service.CheckIn(ctx, proformaID, sessionID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}
 
 func (h *Handler) CheckOut(c *gin.Context) {}
 
