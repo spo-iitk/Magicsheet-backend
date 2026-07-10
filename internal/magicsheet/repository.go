@@ -205,6 +205,9 @@ func (r *Repository) CheckIn(ctx context.Context, sessionID uint) (*database.Int
 
 			case database.SessionRejected, database.SessionAbsent:
 				return ErrInvalidSessionState
+
+			default:
+				return ErrInvalidSessionState
 			}
 		}
 
@@ -225,7 +228,7 @@ func (r *Repository) CheckIn(ctx context.Context, sessionID uint) (*database.Int
 			return err
 		}
 
-		if err := tx.First(&session, sessionID).Error; err != nil {
+		if err := tx.Preload("Round").Preload("ProformaCandidate.Student").First(&session, sessionID).Error; err != nil {
 			return err
 		}
 
@@ -241,9 +244,13 @@ func (r *Repository) CheckIn(ctx context.Context, sessionID uint) (*database.Int
 
 }
 
-func (r *Repository) CheckOut(ctx context.Context, sessionID uint) (*database.InterviewSession, error)
+func (r *Repository) CheckOut(ctx context.Context, sessionID uint) (*database.InterviewSession, error) {
+	panic("not implemented")
+}
 
-func (r *Repository) UpdateSessionResult(ctx context.Context, sessionID uint, status database.SessionStatus) (*database.InterviewSession, error)
+func (r *Repository) UpdateSessionResult(ctx context.Context, sessionID uint, status database.SessionStatus) (*database.InterviewSession, error) {
+	panic("not implemented")
+}
 
 func (r *Repository) CreateRound(
 	ctx context.Context,
