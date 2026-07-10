@@ -329,11 +329,9 @@ func (r *Repository) UpdateSessionResult(ctx context.Context, sessionID uint, st
 	return &session, nil
 }
 
-func (r *Repository) CreateRound(
-	ctx context.Context,
-	round *database.InterviewRound,
-) error {
-	panic("not implemented")
+func (r *Repository) CreateRound(ctx context.Context, round *database.InterviewRound) error {
+	return r.db.WithContext(ctx).Create(round).Error
+
 }
 
 func (r *Repository) GetInterviewSession(

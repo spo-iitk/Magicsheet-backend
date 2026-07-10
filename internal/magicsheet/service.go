@@ -142,5 +142,31 @@ func (s *Service) CreateRound(
 	proformaID uint,
 	name string,
 ) (*RoundDTO, error) {
-	panic("not implemented")
+	rounds, err := s.repo.GetInterviewRounds(ctx, proformaID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	nextRoundNumber := 1
+	if len(rounds) > 0 {
+		nextRoundNumber = rounds[len(rounds)-1].RoundNumber + 1
+	}
+	round := &database.InterviewRound{
+		ProformaID:  proformaID,
+		RoundNumber: nextRoundNumber,
+		Name:        name,
+	}
+
+	if err := s.repo.CreateRound(ctx, round); err != nil {
+		return nil, err
+	}
+
+	dto := RoundDTO{
+		ID:          round.ID,
+		RoundNumber: round.RoundNumber,
+		Name:        round.Name,
+	}
+
+	return &dto, nil
 }

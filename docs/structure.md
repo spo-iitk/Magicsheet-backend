@@ -4,26 +4,61 @@ This document outlines the planned directory and file structure for the backend 
 
 ```text
 backend/
-│
-├── cmd/
-│   └── server/
+├── .air.toml
+├── .env
+├── .env.example
+├── .gitignore
+├── cmd
+│   └── server
 │       └── main.go
-│
-├── internal/
-│   ├── auth/
+├── docker-compose.yml
+├── docs
+│   ├── schema.dbml
+│   ├── schema.sql
+│   └── structure.md
+├── go.mod
+├── go.sum
+├── internal
+│   ├── auth
+│   │   ├── dto.go
+│   │   ├── errors.go
 │   │   ├── handler.go
-│   │   ├── service.go
-│   │   ├── repository.go
+│   │   ├── jtw.go
 │   │   ├── middleware.go
+│   │   ├── repository.go
 │   │   ├── routes.go
-│   │   └── dto.go
-│   │
-│   ├── database/
-│   ├── config/
-│   ├── utils/
-│   └── common/
-│
-├── migrations/
-├── docs/
-└── go.mod
+│   │   └── service.go
+│   ├── database
+│   │   ├── db.main.go
+│   │   └── db.schema.go
+│   ├── magicsheet
+│   │   ├── dto.go
+│   │   ├── error.go
+│   │   ├── handler.go
+│   │   ├── mapper.go
+│   │   ├── repository.go
+│   │   ├── route.go
+│   │   └── service.go
+│   ├── middleware
+│   │   ├── cors.go
+│   │   ├── proforma_access.go
+│   │   └── rbac.go
+│   ├── rc
+│   │   ├── assign.go
+│   │   ├── dto.go
+│   │   ├── handler.go
+│   │   ├── repository.go
+│   │   ├── routes.go
+│   │   └── service.go
+│   └── sync
+│       ├── handler.go
+│       ├── helper.go
+│       ├── program_mapping.go
+│       ├── ras_models.go
+│       ├── ras_repository.go
+│       ├── repository.go
+│       ├── routes.go
+│       └── service.go
+├── migrations
+└── scripts
 ```

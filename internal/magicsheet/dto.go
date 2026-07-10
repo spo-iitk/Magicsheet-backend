@@ -59,3 +59,7 @@ type RegisterCandidateRequest struct {
 type UpdateSessionResultRequest struct {
 	Status database.SessionStatus `json:"status" binding:"required"`
 }
+
+type CreateRoundRequest struct {
+	Name string `json:"name" binding:"required"`
+}
