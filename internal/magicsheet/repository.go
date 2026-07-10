@@ -178,6 +178,36 @@ func (r *Repository) CheckIn(ctx context.Context, sessionID uint) (*database.Int
 			return ErrInvalidSessionState
 		}
 
+		if session.Round.RoundNumber > 1 {
+			var previousRound database.InterviewRound
+
+			if err := tx.Where("proforma_id = ? AND round_number = ?", session.ProformaID, session.Round.RoundNumber-1).First(&previousRound).Error; err != nil {
+				return err
+			}
+
+			var previousSession database.InterviewSession
+
+			if err := tx.Where("proforma_candidate_id = ? AND round_id = ?", session.ProformaCandidateID, previousRound.ID).First(&previousSession).Error; err != nil {
+				return err
+			}
+
+			switch previousSession.Status {
+
+			case database.SessionPassed:
+				//pretty fine
+
+			case database.SessionCheckedOut, database.SessionResultPending:
+				previousSession.Status = database.SessionPassed
+
+				if err := tx.Save(&previousSession).Error; err != nil {
+					return err
+				}
+
+			case database.SessionRejected, database.SessionAbsent:
+				return ErrInvalidSessionState
+			}
+		}
+
 		now := time.Now()
 
 		session.Status = database.SessionCheckedIn
