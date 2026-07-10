@@ -270,3 +270,41 @@ func (h *Handler) UpdateRound(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 
 }
+
+func (h *Handler) CreateAndCheckIn(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	proformaID, err := getUintParam(c, "proformaID")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid proforma id"})
+		return
+	}
+
+	candidateID, err := getUintParam(c, "candidateID")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid candidate id"})
+		return
+	}
+
+	roundID, err := getUintParam(c, "roundID")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid round id"})
+		return
+	}
+
+	response, err := h.service.CreateAndCheckIn(
+		ctx,
+		proformaID,
+		candidateID,
+		roundID,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}

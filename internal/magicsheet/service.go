@@ -184,3 +184,25 @@ func (s *Service) UpdateRound(ctx context.Context, proformaID uint, roundID uint
 		Name:        round.Name,
 	}, nil
 }
+func (s *Service) CreateAndCheckIn(
+	ctx context.Context,
+	proformaID uint,
+	candidateID uint,
+	roundID uint,
+) (*InterviewSessionDTO, error) {
+
+	session, err := s.repo.CreateAndCheckIn(
+		ctx,
+		proformaID,
+		candidateID,
+		roundID,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	dto := mapSession(*session)
+
+	return &dto, nil
+}

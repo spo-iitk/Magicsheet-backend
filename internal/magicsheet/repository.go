@@ -297,7 +297,7 @@ func (r *Repository) UpdateSessionResult(ctx context.Context, sessionID uint, st
 			return err
 		}
 
-		if session.Status != database.SessionCheckedOut {
+		if session.Status != database.SessionCheckedOut && session.Status != database.SessionResultPending {
 			return ErrInvalidSessionState
 		}
 
@@ -356,4 +356,104 @@ func (r *Repository) UpdateRound(ctx context.Context, roundID uint, name string)
 	}
 
 	return &round, nil
+}
+func (r *Repository) CreateAndCheckIn(
+	ctx context.Context,
+	proformaID uint,
+	proformaCandidateID uint,
+	roundID uint,
+) (*database.InterviewSession, error) {
+
+	var session database.InterviewSession
+
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+
+		session = database.InterviewSession{
+			ProformaID:          proformaID,
+			ProformaCandidateID: proformaCandidateID,
+			RoundID:             roundID,
+			Status:              database.SessionPending,
+		}
+
+		if err := tx.Create(&session).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Preload("Round").Preload("ProformaCandidate.Student").First(&session, session.ID).Error; err != nil {
+			return err
+		}
+
+		if session.Status != database.SessionPending {
+			return ErrInvalidSessionState
+		}
+
+		if session.Round.RoundNumber > 1 {
+			var previousRound database.InterviewRound
+
+			if err := tx.Where(
+				"proforma_id = ? AND round_number = ?",
+				session.ProformaID,
+				session.Round.RoundNumber-1,
+			).First(&previousRound).Error; err != nil {
+				return err
+			}
+
+			var previousSession database.InterviewSession
+
+			if err := tx.Where(
+				"proforma_candidate_id = ? AND round_id = ?",
+				session.ProformaCandidateID,
+				previousRound.ID,
+			).First(&previousSession).Error; err != nil {
+				return err
+			}
+
+			switch previousSession.Status {
+
+			case database.SessionPassed:
+				// fine
+
+			case database.SessionCheckedOut, database.SessionResultPending:
+				previousSession.Status = database.SessionPassed
+
+				if err := tx.Save(&previousSession).Error; err != nil {
+					return err
+				}
+
+			case database.SessionRejected, database.SessionAbsent:
+				return ErrInvalidSessionState
+
+			default:
+				return ErrInvalidSessionState
+			}
+		}
+
+		now := time.Now()
+
+		session.Status = database.SessionCheckedIn
+		session.InTime = &now
+
+		if err := tx.Save(&session).Error; err != nil {
+			return err
+		}
+
+		student := session.ProformaCandidate.Student
+		student.CurrentStatus = database.StudentInterviewing
+
+		if err := tx.Save(&student).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Preload("Round").Preload("ProformaCandidate.Student").First(&session, session.ID).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &session, nil
 }

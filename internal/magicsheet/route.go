@@ -21,4 +21,8 @@ func RegisterRoutes(router *gin.RouterGroup, handler *Handler, accessChecker mid
 
 	protected.POST("/rounds", handler.CreateRound)
 	protected.PATCH("/rounds/:roundID", handler.UpdateRound)
+	protected.POST(
+    "/candidates/:candidateID/rounds/:roundID/check-in",
+    handler.CreateAndCheckIn,
+)
 }
