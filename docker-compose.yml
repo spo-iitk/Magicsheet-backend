@@ -41,6 +41,11 @@ volumes:
 
 networks:
   default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.6.0/24"
   ras-network:
     external:
       name: ras-backend_default
