@@ -289,7 +289,44 @@ func (r *Repository) CheckOut(ctx context.Context, sessionID uint) (*database.In
 }
 
 func (r *Repository) UpdateSessionResult(ctx context.Context, sessionID uint, status database.SessionStatus) (*database.InterviewSession, error) {
-	panic("not implemented")
+
+	var session database.InterviewSession
+
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.First(&session, sessionID).Error; err != nil {
+			return err
+		}
+
+		if session.Status != database.SessionCheckedOut {
+			return ErrInvalidSessionState
+		}
+
+		switch status {
+		case database.SessionPassed, database.SessionRejected, database.SessionResultPending, database.SessionAbsent:
+		//valid
+
+		default:
+			return ErrInvalidSessionState
+		}
+
+		session.Status = status
+
+		if err := tx.Save(&session).Error; err != nil {
+			return err
+		}
+
+		if err := tx.First(&session, sessionID).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &session, nil
 }
 
 func (r *Repository) CreateRound(

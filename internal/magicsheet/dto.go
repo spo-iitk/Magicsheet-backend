@@ -55,3 +55,7 @@ type InterviewSessionDTO struct {
 type RegisterCandidateRequest struct {
 	RollNumber string `json:"roll_number" binding:"required"`
 }
+
+type UpdateSessionResultRequest struct {
+	Status database.SessionStatus `json:"status" binding:"required"`
+}

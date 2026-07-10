@@ -124,13 +124,17 @@ func (s *Service) CheckOut(ctx context.Context, proformaID uint, sessionID uint)
 	return &dto, nil
 }
 
-func (s *Service) UpdateSessionResult(
-	ctx context.Context,
-	proformaID uint,
-	sessionID uint,
-	status database.SessionStatus,
-) (*InterviewSessionDTO, error) {
-	panic("not implemented")
+func (s *Service) UpdateSessionResult(ctx context.Context, proformaID uint, sessionID uint, status database.SessionStatus) (*InterviewSessionDTO, error) {
+
+	session, err := s.repo.UpdateSessionResult(ctx, sessionID, status)
+
+	if err != nil {
+		return nil, err
+	}
+
+	dto := mapSession(*session)
+
+	return &dto, nil
 }
 
 func (s *Service) CreateRound(

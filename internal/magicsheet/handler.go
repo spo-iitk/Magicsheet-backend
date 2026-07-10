@@ -139,7 +139,45 @@ func (h *Handler) CheckOut(c *gin.Context) {
 
 }
 
-func (h *Handler) UpdateSessionResult(c *gin.Context) {}
+func (h *Handler) UpdateSessionResult(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	proformaID, err := getUintParam(c, "proformaID")
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid proforma id",
+		})
+		return
+	}
+
+	sessionID, err := getUintParam(c, "sessionID")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid session id",
+		})
+		return
+	}
+
+	var req UpdateSessionResultRequest
+	if err := c.ShouldBindBodyWithJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid request body",
+		})
+		return
+	}
+
+	response, err := h.service.UpdateSessionResult(ctx, proformaID, sessionID, req.Status)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+}
 
 func (h *Handler) CreateRound(c *gin.Context) {}
 
