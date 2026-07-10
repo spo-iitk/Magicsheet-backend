@@ -112,12 +112,16 @@ func (s *Service) CheckIn(ctx context.Context, proformaID uint, sessionID uint) 
 	return &dto, nil
 }
 
-func (s *Service) CheckOut(
-	ctx context.Context,
-	proformaID uint,
-	sessionID uint,
-) (*InterviewSessionDTO, error) {
-	panic("not implemented")
+func (s *Service) CheckOut(ctx context.Context, proformaID uint, sessionID uint) (*InterviewSessionDTO, error) {
+	session, err := s.repo.CheckOut(ctx, sessionID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	dto := mapSession(*session)
+
+	return &dto, nil
 }
 
 func (s *Service) UpdateSessionResult(

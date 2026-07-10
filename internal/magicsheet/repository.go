@@ -245,7 +245,47 @@ func (r *Repository) CheckIn(ctx context.Context, sessionID uint) (*database.Int
 }
 
 func (r *Repository) CheckOut(ctx context.Context, sessionID uint) (*database.InterviewSession, error) {
-	panic("not implemented")
+	var session database.InterviewSession
+
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+
+		if err := tx.Preload("ProformaCandidate.Student").First(&session, sessionID).Error; err != nil {
+			return err
+		}
+
+		if session.Status != database.SessionCheckedIn {
+			return ErrInvalidSessionState
+		}
+
+		now := time.Now()
+
+		session.Status = database.SessionCheckedOut
+		session.OutTime = &now
+
+		if err := tx.Save(&session).Error; err != nil {
+			return err
+		}
+
+		student := session.ProformaCandidate.Student
+
+		student.CurrentStatus = database.StudentAvailable
+
+		if err := tx.Save(&student).Error; err != nil {
+			return err
+		}
+
+		if err := tx.Preload("ProformaCandidate.Student").First(&session, sessionID).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &session, nil
 }
 
 func (r *Repository) UpdateSessionResult(ctx context.Context, sessionID uint, status database.SessionStatus) (*database.InterviewSession, error) {
