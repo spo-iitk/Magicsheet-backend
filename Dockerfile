@@ -25,9 +25,6 @@ WORKDIR /app
 # Copy the compiled binary from the builder
 COPY --from=builder /app/main .
 
-# Copy database migrations
-COPY --from=builder /app/migrations ./migrations
-
 # Expose backend port
 EXPOSE 8080
 
