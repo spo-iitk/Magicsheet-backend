@@ -30,8 +30,6 @@ services:
         condition: service_healthy
     volumes:
       - .env:/app/.env
-    ports:
-      - "8082:8080"
     networks:
       - default
       - ras-network
