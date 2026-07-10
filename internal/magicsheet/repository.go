@@ -334,26 +334,26 @@ func (r *Repository) CreateRound(ctx context.Context, round *database.InterviewR
 
 }
 
-func (r *Repository) UpdateRound(ctx context.Context, roundID uint,name string,) (*database.InterviewRound, error) {
+func (r *Repository) UpdateRound(ctx context.Context, roundID uint, name string) (*database.InterviewRound, error) {
 	var round database.InterviewRound
 
-	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error{
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.First(&round, roundID).Error; err != nil {
 			return err
 		}
 
-		round.Name = name 
+		round.Name = name
 
-		if err := tx.Save(&round).Error; err != nil{
+		if err := tx.Save(&round).Error; err != nil {
 			return err
 		}
-		
-		return nil 
+
+		return nil
 	})
 
 	if err != nil {
 		return nil, err
 	}
-	
-	round &round, nil 
+
+	return &round, nil
 }

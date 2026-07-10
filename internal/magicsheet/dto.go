@@ -63,3 +63,7 @@ type UpdateSessionResultRequest struct {
 type CreateRoundRequest struct {
 	Name string `json:"name" binding:"required"`
 }
+
+type UpdateRoundRequest struct {
+	Name string `json:"name" binding:"required"`
+}

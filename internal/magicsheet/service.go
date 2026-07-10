@@ -170,3 +170,17 @@ func (s *Service) CreateRound(
 
 	return &dto, nil
 }
+
+func (s *Service) UpdateRound(ctx context.Context, proformaID uint, roundID uint, name string) (*RoundDTO, error) {
+
+	round, err := s.repo.UpdateRound(ctx, roundID, name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &RoundDTO{
+		ID:          round.ID,
+		RoundNumber: round.RoundNumber,
+		Name:        round.Name,
+	}, nil
+}
