@@ -17,4 +17,5 @@ func RegisterRoutes(api *gin.RouterGroup, handler *Handler) {
 	protected.POST("/logout", handler.Logout)
 	protected.GET("/me", handler.Me)
 	protected.POST("/create-user", middleware.RequireRoles("god"), handler.CreateUser)
+
 }

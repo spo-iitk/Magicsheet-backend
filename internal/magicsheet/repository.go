@@ -334,16 +334,26 @@ func (r *Repository) CreateRound(ctx context.Context, round *database.InterviewR
 
 }
 
-func (r *Repository) GetInterviewSession(
-	ctx context.Context,
-	sessionID uint,
-) (*database.InterviewSession, error) {
-	panic("not implemented")
-}
+func (r *Repository) UpdateRound(ctx context.Context, roundID uint,name string,) (*database.InterviewRound, error) {
+	var round database.InterviewRound
 
-func (r *Repository) UpdateStudent(
-	ctx context.Context,
-	student *database.Student,
-) error {
-	panic("not implemented")
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error{
+		if err := tx.First(&round, roundID).Error; err != nil {
+			return err
+		}
+
+		round.Name = name 
+
+		if err := tx.Save(&round).Error; err != nil{
+			return err
+		}
+		
+		return nil 
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	
+	round &round, nil 
 }

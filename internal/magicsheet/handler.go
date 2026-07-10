@@ -224,3 +224,49 @@ func getUintParam(c *gin.Context, key string) (uint, error) {
 
 	return uint(value), nil
 }
+
+func (h *Handler) UpdateRound(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	proformaID, err := getUintParam(c, "proformaID")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid proforma id",
+		})
+		return
+	}
+
+	roundID, err := getUintParam(c, "roundID")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid round id",
+		})
+		return
+	}
+
+	var req UpdateRoundRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid request body",
+		})
+		return
+	}
+
+	response, err := h.service.UpdateRound(
+		ctx,
+		proformaID,
+		roundID,
+		req.Name,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response)
+
+}
